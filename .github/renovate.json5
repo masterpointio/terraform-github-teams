@@ -1,0 +1,29 @@
+{
+  "extends": [
+    "config:best-practices",
+    "github>aquaproj/aqua-renovate-config#2.7.5"
+  ],
+  "schedule": [
+    "after 9am on the first day of the month"
+  ],
+  "assigneesFromCodeOwners": true,
+  "dependencyDashboardAutoclose": true,
+  "addLabels": [
+    "auto-upgrade"
+  ],
+  "enabledManagers": [
+    "terraform"
+  ],
+  "terraform": {
+    "ignorePaths": [
+      "**/context.tf" // Mixin file https://github.com/cloudposse/terraform-null-label/blob/main/exports/context.tf
+    ]
+  },
+  "packageRules": [
+    {
+      "matchDepTypes": [
+        "optionalDependencies"
+      ]
+    }
+  ]
+}
