@@ -1,10 +1,9 @@
-name: OpenTofu Test
+name: TF Test
 
 on:
   push:
     branches:
       - main
-      - feature/int-1001/initial-version
   pull_request:
 
 permissions:
@@ -15,9 +14,12 @@ permissions:
   pull-requests: read
 
 jobs:
-  tofu-test:
-    name: OpenTofu Test
+  tf-test:
+    name: ${{ matrix.tf }} Test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tf: [tofu, terraform]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
@@ -37,7 +39,7 @@ jobs:
 
       - name: Aqua Install
         shell: bash
-        run: aqua install --tags tofu
+        run: aqua install --tags ${{ matrix.tf }}
 
-      - run: tofu init
-      - run: tofu test
+      - run: ${{ matrix.tf }} init
+      - run: ${{ matrix.tf }} test

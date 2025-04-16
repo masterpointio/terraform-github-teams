@@ -1,6 +1,5 @@
 module "github_teams" {
-  source  = "masterpointio/teams/github"
-  version = "0.1.0"
+  source = "../../"
 
   github_organization = "example-org"
 
@@ -8,7 +7,7 @@ module "github_teams" {
     "platform-engineers" = {
       name        = "Platform Engineers"
       description = "Team responsible for platform infrastructure"
-      privacy     = "closed"
+      privacy     = "secret"
       members = [
         {
           username = "lead-engineer"

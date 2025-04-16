@@ -1,10 +1,3 @@
-# Note: This test file uses OpenTofu-specific test syntax.
-# It is not compatible with Terraform due to differences in the testing framework.
-# Key differences:
-# - OpenTofu does not support source in mock_provider
-# - OpenTofu only allows overriding computed fields
-# - OpenTofu has different mock data handling
-
 mock_provider "github" {
   alias = "mock"
 }
