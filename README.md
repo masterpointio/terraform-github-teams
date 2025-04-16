@@ -1,6 +1,6 @@
 [![Banner][banner-image]](https://masterpoint.io/)
 
-# terraform-module-template
+# terraform-github-teams
 
 [![Release][release-badge]][latest-release]
 
@@ -8,17 +8,117 @@
 
 ## Purpose and Functionality
 
-This repository serves as a template for creating Terraform modules, providing a standardized structure and essential files for efficient module development. It's designed to ensure consistency and our best practices across Terraform projects.
+This Terraform module manages GitHub teams and their memberships within an organization, providing team and access management:
+
+- **Team Management**: Create and configure teams with customizable properties, including privacy settings (secret/closed).
+- **Membership Control**: Manage team memberships with maintainer or member roles, ensuring organization owners are always maintainers.
+- **Repository Access**: Configure repository collaborators with granular permissions.
+- **Review Request Delegation**: Set up team review request settings with configurable algorithms and member counts.
+- **Built-in Validation**: Enforce best practices through automated checks for.
 
 ## Usage
 
-### Prerequisites (optional)
+### Prerequisites
 
-TODO
+1. A GitHub organization.
+2. Organization admin access.
+3. GitHub provider configuration with appropriate permissions.
 
-### Step-by-Step Instructions
+### Basic Example
 
-TODO
+```hcl
+module "github_teams" {
+  source  = "masterpointio/teams/github"
+  version = "X.X.X"
+
+  github_organization = "example-org"
+
+  teams = {
+    "developers" = {
+      name = "Developers"
+      members = [
+        {
+          username = "user1"
+          role     = "maintainer"
+        },
+        {
+          username = "user2"
+          role     = "member"
+        }
+      ]
+    }
+  }
+
+  repository_collaborators = {
+    "example-org/repo1" = [
+      {
+        username   = "user3"
+        permission = "push"
+      }
+    ]
+  }
+}
+```
+
+### Advanced Example with All Features
+
+```hcl
+module "github_teams" {
+  source  = "masterpointio/teams/github"
+  version = "X.X.X"
+
+  github_organization = "example-org"
+
+  teams = {
+    "platform-engineers" = {
+      name        = "Platform Engineers"
+      description = "Team responsible for platform infrastructure"
+      privacy     = "closed"
+      members = [
+        {
+          username = "lead-engineer"
+          role     = "maintainer"
+        }
+      ]
+      review_request_delegation = {
+        algorithm    = "ROUND_ROBIN"
+        member_count = 2
+        notify       = true
+      }
+    }
+  }
+
+  repository_collaborators = {
+    "example-org/repo1" = [
+      {
+        username                    = "external-contributor"
+        permission                  = "maintain"
+      }
+    ]
+  }
+}
+```
+
+### Input Variables
+
+| Name                     | Description                                              | Type        | Required |
+| ------------------------ | -------------------------------------------------------- | ----------- | -------- |
+| github_organization      | The GitHub organization name                             | string      | yes      |
+| teams                    | Map of teams to manage with their properties and members | map(object) | no       |
+| repository_collaborators | Map of repositories to their list of collaborators       | map(list)   | no       |
+
+For detailed type definitions and validation rules, see the [variables.tf](./variables.tf) file.
+
+### Validation Rules
+
+1. Team privacy must be either "secret" (default) or "closed".
+2. Member roles must be either "member" (default) or "maintainer".
+3. Repository collaborator permissions must be one of: "pull", "triage", "push", "maintain", "admin".
+4. Repository names must follow the format "owner/repository".
+5. Team map keys must match the slugified team name (lowercase, spaces replaced with hyphens).
+6. Organization owners must be set as maintainers in teams.
+
+These rules are enforced through the variable validation blocks, runtime checks, and test cases that verify all validation logic.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
@@ -80,11 +180,8 @@ Copyright © 2016-2025 [Masterpoint Consulting LLC](https://masterpoint.io/)
 [newsletter-url]: https://newsletter.masterpoint.io/
 [youtube-badge]: https://img.shields.io/badge/YouTube-Subscribe-D191BF?style=for-the-badge&logo=youtube&logoColor=white
 [youtube-url]: https://www.youtube.com/channel/UCeeDaO2NREVlPy9Plqx-9JQ
-
-<!-- TODO: Replace `terraform-module-template` with your actual repository name. -->
-
-[release-badge]: https://img.shields.io/github/v/release/masterpointio/terraform-module-template?color=0E383A&label=Release&style=for-the-badge&logo=github&logoColor=white
-[latest-release]: https://github.com/masterpointio/terraform-module-template/releases/latest
-[contributors-image]: https://contrib.rocks/image?repo=masterpointio/terraform-module-template
-[contributors-url]: https://github.com/masterpointio/terraform-module-template/graphs/contributors
-[issues-url]: https://github.com/masterpointio/terraform-module-template/issues
+[release-badge]: https://img.shields.io/github/v/release/masterpointio/terraform-github-teams?color=0E383A&label=Release&style=for-the-badge&logo=github&logoColor=white
+[latest-release]: https://github.com/masterpointio/terraform-github-teams/releases/latest
+[contributors-image]: https://contrib.rocks/image?repo=masterpointio/terraform-github-teams
+[contributors-url]: https://github.com/masterpointio/terraform-github-teams/graphs/contributors
+[issues-url]: https://github.com/masterpointio/terraform-github-teams/issues
