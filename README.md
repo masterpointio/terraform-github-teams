@@ -24,7 +24,7 @@ This Terraform module manages GitHub teams and their memberships within an organ
 2. Organization admin access.
 3. GitHub provider configuration with appropriate permissions.
 
-### Basic Example
+### Example
 
 ```hcl
 module "github_teams" {
@@ -54,45 +54,6 @@ module "github_teams" {
       {
         username   = "user3"
         permission = "push"
-      }
-    ]
-  }
-}
-```
-
-### Advanced Example with All Features
-
-```hcl
-module "github_teams" {
-  source  = "masterpointio/teams/github"
-  version = "X.X.X"
-
-  github_organization = "example-org"
-
-  teams = {
-    "platform-engineers" = {
-      name        = "Platform Engineers"
-      description = "Team responsible for platform infrastructure"
-      privacy     = "closed"
-      members = [
-        {
-          username = "lead-engineer"
-          role     = "maintainer"
-        }
-      ]
-      review_request_delegation = {
-        algorithm    = "ROUND_ROBIN"
-        member_count = 2
-        notify       = true
-      }
-    }
-  }
-
-  repository_collaborators = {
-    "example-org/repo1" = [
-      {
-        username                    = "external-contributor"
-        permission                  = "maintain"
       }
     ]
   }

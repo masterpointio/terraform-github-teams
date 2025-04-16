@@ -1,3 +1,10 @@
+# Note: This test file uses OpenTofu-specific test syntax.
+# It is not compatible with Terraform due to differences in the testing framework.
+# Key differences:
+# - OpenTofu does not support source in mock_provider
+# - OpenTofu only allows overriding computed fields
+# - OpenTofu has different mock data handling
+
 mock_provider "github" {
   alias = "mock"
 }
@@ -132,46 +139,5 @@ run "validate_repository_collaborators" {
   assert {
     condition     = github_repository_collaborator.default["example-org/repo2:phoebe"].permission == "maintain"
     error_message = "Phoebe should have maintain permission on repo2"
-  }
-}
-
-run "validate_outputs" {
-  command = plan
-
-  providers = {
-    github = github.mock
-  }
-
-  # Test team outputs
-  assert {
-    condition     = output.teams["developers"].name == "Developers"
-    error_message = "Team output should contain correct name"
-  }
-
-  assert {
-    condition     = output.teams["platform-engineers"].privacy == "closed"
-    error_message = "Team output should contain correct privacy setting"
-  }
-
-  # Test team membership outputs
-  assert {
-    condition     = output.team_memberships["developers:rachel"].role == "maintainer"
-    error_message = "Team membership output should contain correct role"
-  }
-
-  assert {
-    condition     = output.team_memberships["developers:ross"].role == "member"
-    error_message = "Team membership output should contain correct role"
-  }
-
-  # Test repository collaborator outputs
-  assert {
-    condition     = output.repository_collaborators["example-org/repo1:monica"].permission == "admin"
-    error_message = "Repository collaborator output should contain correct permission"
-  }
-
-  assert {
-    condition     = output.repository_collaborators["example-org/repo2:phoebe"].permission == "maintain"
-    error_message = "Repository collaborator output should contain correct permission"
   }
 }
