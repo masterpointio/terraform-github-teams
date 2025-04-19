@@ -27,6 +27,16 @@ locals {
   ]...)
 }
 
+resource "github_membership" "default" {
+  for_each = var.organization_memberships_enabled ? {
+    for member in var.organization_memberships : member.username => member
+  } : {}
+
+  username             = each.key
+  role                 = each.value.role
+  downgrade_on_destroy = each.value.downgrade_on_destroy
+}
+
 resource "github_team" "default" {
   for_each = var.teams
 
@@ -36,6 +46,8 @@ resource "github_team" "default" {
   parent_team_id            = each.value.parent_team_id
   ldap_dn                   = each.value.ldap_dn
   create_default_maintainer = each.value.create_default_maintainer
+
+  depends_on = [github_membership.default] # Ensure org membership exists first
 }
 
 resource "github_team_membership" "default" {
@@ -44,6 +56,8 @@ resource "github_team_membership" "default" {
   team_id  = each.value.team_id
   username = each.value.username
   role     = each.value.role
+
+  depends_on = [github_membership.default] # Ensure org membership exists first
 }
 
 resource "github_repository_collaborator" "default" {

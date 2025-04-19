@@ -3,6 +3,25 @@ module "github_teams" {
 
   github_organization = "example-org"
 
+  organization_memberships = [
+    {
+      username             = "lead-engineer"
+      role                 = "admin"
+      downgrade_on_destroy = true
+    },
+    {
+      username = "senior-engineer"
+      role     = "admin"
+    },
+    {
+      username = "junior-engineer"
+    },
+    {
+      username = "external-contributor"
+      role     = "member"
+    }
+  ]
+
   teams = {
     "platform-engineers" = {
       name        = "Platform Engineers"

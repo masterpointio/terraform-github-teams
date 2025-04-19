@@ -91,10 +91,56 @@ variable "teams" {
   }
 
   validation {
+    condition = !var.organization_memberships_enabled || alltrue(flatten([
+      for team_key, team in var.teams : [
+        for member in team.members :
+        contains([for org_member in var.organization_memberships : org_member.username], member.username)
+      ]
+    ]))
+    error_message = join("\n",
+      concat(
+        ["The following team members must be present in organization_memberships:"],
+        [
+          for team_key, team in var.teams :
+          [
+            for member in team.members :
+            format("  - Username: %s, Team: %s", member.username, team.name)
+            if !contains([for org_member in var.organization_memberships : org_member.username], member.username)
+          ]
+        ]...
+      )
+    )
+  }
+
+  validation {
     condition = alltrue([
       for team_key, team in var.teams :
       lower(replace(replace(team.name, " ", "-"), "/[^a-zA-Z0-9-]/", "")) == team_key
     ])
     error_message = "Team map key must match the slugified team name (lowercase, spaces replaced with hyphens, special characters removed)."
+  }
+}
+
+variable "organization_memberships_enabled" {
+  type        = bool
+  description = "Whether to manage organization memberships with Terraform. If false, organization memberships must be managed outside of Terraform."
+  default     = true
+}
+
+variable "organization_memberships" {
+  type = list(object({
+    username             = string
+    role                 = optional(string, "member")
+    downgrade_on_destroy = optional(bool, false)
+  }))
+  description = "List of organization members. Each member can be configured with a role ('admin' or 'member') and downgrade behavior."
+  default     = []
+
+  validation {
+    condition = alltrue([
+      for member in var.organization_memberships :
+      contains(["admin", "member"], coalesce(member.role, "member"))
+    ])
+    error_message = "Organization membership role must be either 'admin' or 'member'."
   }
 }

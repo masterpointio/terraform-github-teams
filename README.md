@@ -8,13 +8,30 @@
 
 ## Purpose and Functionality
 
-This Terraform module manages GitHub teams and their memberships within an organization, providing team and access management:
+Terraform module for declaratively managing GitHub teams and their related settings within your organization. It enables you to:
 
-- **Team Management**: Create and configure teams with customizable properties, including privacy settings (secret/closed).
-- **Membership Control**: Manage team memberships with maintainer or member roles, ensuring organization owners are always maintainers.
-- **Repository Access**: Configure repository collaborators with granular permissions.
-- **Review Request Delegation**: Set up team review request settings with configurable algorithms and member counts.
-- **Built-in Validation**: Enforce best practices through automated checks for.
+- Manage GitHub teams and their configurations
+- Control team memberships and roles
+- Configure repository collaborators
+- Manage organization membership
+- Review request delegation settings
+- Control team privacy
+
+## Organization Memberships Management
+
+### Enabling/Disabling Management
+
+The module provides flexibility in managing organization memberships through the `organization_memberships_enabled` variable:
+
+- When `true` (default):
+
+  - Terraform creates GitHub organization memberships for all users listed in `organization_memberships`
+  - Manages role assignments (admin/member)
+  - Handles the `downgrade_on_destroy` behavior per member: when organization membership resource is destroyed, the member will not be removed from the organization. Instead, the member's role will be downgraded to `member`.
+
+- When `false`:
+  - No GitHub organization memberships are managed by Terraform
+  - Team memberships and other resources continue to be managed
 
 ## Usage
 
@@ -33,9 +50,25 @@ module "github_teams" {
 
   github_organization = "example-org"
 
+  organization_memberships = [
+    {
+      username = "user1"
+      role     = "admin"
+    },
+    {
+      username = "user2"
+      role     = "member"
+    },
+    {
+      username = "user3"
+      role     = "member"
+    }
+  ]
   teams = {
     "developers" = {
-      name = "Developers"
+      name        = "Developers"
+      description = "Development team"
+      privacy     = "closed"
       members = [
         {
           username = "user1"
@@ -43,6 +76,21 @@ module "github_teams" {
         },
         {
           username = "user2"
+          role     = "member"
+        }
+      ],
+      review_request_delegation = {
+        algorithm    = "ROUND_ROBIN"
+        member_count = 2
+        notify       = true
+      }
+    },
+    "platform-engineers" = {
+      name        = "Platform Engineers"
+      description = "Platform engineering team"
+      members = [
+        {
+          username = "user3"
           role     = "member"
         }
       ]
@@ -60,28 +108,68 @@ module "github_teams" {
 }
 ```
 
-### Input Variables
-
-| Name                     | Description                                              | Type        | Required |
-| ------------------------ | -------------------------------------------------------- | ----------- | -------- |
-| github_organization      | The GitHub organization name                             | string      | yes      |
-| teams                    | Map of teams to manage with their properties and members | map(object) | no       |
-| repository_collaborators | Map of repositories to their list of collaborators       | map(list)   | no       |
-
-For detailed type definitions and validation rules, see the [variables.tf](./variables.tf) file.
-
 ### Validation Rules
 
-1. Team privacy must be either "secret" (default) or "closed".
-2. Member roles must be either "member" (default) or "maintainer".
-3. Repository collaborator permissions must be one of: "pull", "triage", "push", "maintain", "admin".
-4. Repository names must follow the format "owner/repository".
-5. Team map keys must match the slugified team name (lowercase, spaces replaced with hyphens).
-6. Organization owners must be set as maintainers in teams.
+The module enforces several validations:
 
-These rules are enforced through the variable validation blocks, runtime checks, and test cases that verify all validation logic.
+- All team members must be listed in `organization_memberships`
+- Valid roles (admin/member) for organization members
+- Valid team member roles (maintainer/member)
+- Team name slugification rules
+- Repository collaborator permissions
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+## Requirements
+
+| Name                                                                     | Version |
+| ------------------------------------------------------------------------ | ------- |
+| <a name="requirement_terraform"></a> [terraform](#requirement_terraform) | >= 1.7  |
+| <a name="requirement_github"></a> [github](#requirement_github)          | >= 6.0  |
+
+## Providers
+
+| Name                                                      | Version |
+| --------------------------------------------------------- | ------- |
+| <a name="provider_github"></a> [github](#provider_github) | >= 6.0  |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name                                                                                                                                                  | Type        |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [github_membership.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/membership)                             | resource    |
+| [github_repository_collaborator.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_collaborator)   | resource    |
+| [github_team.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/team)                                         | resource    |
+| [github_team_membership.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/team_membership)                   | resource    |
+| [github_team_settings.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/team_settings)                       | resource    |
+| [github_user_invitation_accepter.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/user_invitation_accepter) | resource    |
+| [github_organization.current](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/organization)                      | data source |
+| [github_users.all_users](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/users)                                  | data source |
+
+## Inputs
+
+| Name                                                                                                                              | Description                                                                                                                         | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Default | Required |
+| --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | :------: |
+| <a name="input_github_organization"></a> [github_organization](#input_github_organization)                                        | The GitHub organization name                                                                                                        | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | n/a     |   yes    |
+| <a name="input_organization_memberships"></a> [organization_memberships](#input_organization_memberships)                         | List of organization members. Each member can be configured with a role ('admin' or 'member') and downgrade behavior.               | <pre>list(object({<br/> username = string<br/> role = optional(string, "member")<br/> downgrade_on_destroy = optional(bool, false)<br/> }))</pre>                                                                                                                                                                                                                                                                                                                                                                                                                         | `[]`    |    no    |
+| <a name="input_organization_memberships_enabled"></a> [organization_memberships_enabled](#input_organization_memberships_enabled) | Whether to manage organization memberships with Terraform. If false, organization memberships must be managed outside of Terraform. | `bool`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `true`  |    no    |
+| <a name="input_repository_collaborators"></a> [repository_collaborators](#input_repository_collaborators)                         | Map of repositories to their list of collaborators. Key format: owner/repository                                                    | <pre>map(list(object({<br/> username = string<br/> permission = optional(string, "push")<br/> permission_diff_suppression = optional(bool, false)<br/> })))</pre>                                                                                                                                                                                                                                                                                                                                                                                                         | `{}`    |    no    |
+| <a name="input_teams"></a> [teams](#input_teams)                                                                                  | Map of teams to manage                                                                                                              | <pre>map(object({<br/> name = string<br/> description = optional(string)<br/> privacy = optional(string, "secret")<br/> parent_team_id = optional(number)<br/> ldap_dn = optional(string)<br/> create_default_maintainer = optional(bool, false)<br/> members = optional(list(object({<br/> username = string<br/> role = optional(string, "member")<br/> })), [])<br/> review_request_delegation = optional(object({<br/> algorithm = optional(string, "ROUND_ROBIN")<br/> member_count = optional(number, 1)<br/> notify = optional(bool, true)<br/> }))<br/> }))</pre> | `{}`    |    no    |
+
+## Outputs
+
+| Name                                                                                                        | Description                                                                      |
+| ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| <a name="output_organization_memberships"></a> [organization_memberships](#output_organization_memberships) | Map of organization members and their roles                                      |
+| <a name="output_repository_collaborators"></a> [repository_collaborators](#output_repository_collaborators) | Map of repository collaborators in format 'repo:username' with their permissions |
+| <a name="output_team_memberships"></a> [team_memberships](#output_team_memberships)                         | Map of team memberships in format 'team:username' with their roles               |
+| <a name="output_team_settings"></a> [team_settings](#output_team_settings)                                  | Map of team settings for teams with review request delegation configured         |
+| <a name="output_teams"></a> [teams](#output_teams)                                                          | Map of team names to their properties including ID and slug                      |
+
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Built By

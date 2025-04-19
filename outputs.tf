@@ -45,3 +45,10 @@ output "team_settings" {
     }
   }
 }
+
+output "organization_memberships" {
+  description = "Map of organization members and their roles"
+  value = {
+    for membership in github_membership.default : membership.username => membership.role
+  }
+}

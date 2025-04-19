@@ -14,10 +14,26 @@ locals {
     }
     if contains(local.org_owners, membership.username) && membership.role != "maintainer"
   ]
+
+  # Collect all usernames from all sources
+  all_usernames = distinct(concat(
+    # Organization members
+    [for member in var.organization_memberships : member.username],
+    # Repository collaborators
+    flatten([
+      for collaborators in var.repository_collaborators : [
+        for collab in collaborators : collab.username
+      ]
+    ])
+  ))
 }
 
 data "github_organization" "current" {
   name = var.github_organization
+}
+
+data "github_users" "all_users" {
+  usernames = local.all_usernames
 }
 
 check "github_team_org_owners_role" {
@@ -34,6 +50,16 @@ check "github_team_org_owners_role" {
           "  - Username: ${invalid.username}, Team: ${invalid.team}"
         ]
       )
+    )
+  }
+}
+
+check "validate_users_exist" {
+  assert {
+    condition = length(data.github_users.all_users.unknown_logins) == 0
+    error_message = format(
+      "The following users do not exist in GitHub: %s",
+      join(", ", data.github_users.all_users.unknown_logins)
     )
   }
 }
