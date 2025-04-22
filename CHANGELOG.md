@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/masterpointio/terraform-github-teams/compare/v0.1.0...v0.2.0) (2025-04-22)
+
+
+### Features
+
+* add example + test GHA ([453381d](https://github.com/masterpointio/terraform-github-teams/commit/453381d02bb1d842c5fb09898d3f3632a21abf99))
+* init version ([d3a9594](https://github.com/masterpointio/terraform-github-teams/commit/d3a9594cb95440eddbfdb52b4bc5420ddd5235c3))
+
 ## 0.1.0 (2025-04-22)
 
 
