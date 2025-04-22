@@ -36,9 +36,9 @@ lint:
       paths:
         - "**/backend.tf.json"
     # Ignore CHANGELOG.md as release-please manages this file
-    - linters: [prettier, markdownlint]
+    - linters: [ALL]
       paths:
-        - CHANGELOG.md
+        - "**/CHANGELOG.md"
 actions:
   enabled:
     - terraform-docs
