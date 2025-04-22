@@ -1,12 +1,12 @@
-version: 0.19.0
+version: 0.20.0
 formatter: markdown table
 
 recursive:
-  enabled: true
-  include-main: false
+  enabled: false
 
 settings:
   lockfile: false
+  path: .
 
 output:
   file: README.md
