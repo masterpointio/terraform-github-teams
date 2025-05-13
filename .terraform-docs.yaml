@@ -6,7 +6,6 @@ recursive:
 
 settings:
   lockfile: false
-  path: .
 
 output:
   file: README.md
