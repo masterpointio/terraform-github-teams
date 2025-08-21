@@ -119,19 +119,18 @@ The module enforces several validations:
 - Repository collaborator permissions
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-
 ## Requirements
 
-| Name                                                                     | Version |
-| ------------------------------------------------------------------------ | ------- |
-| <a name="requirement_terraform"></a> [terraform](#requirement_terraform) | >= 1.7  |
-| <a name="requirement_github"></a> [github](#requirement_github)          | >= 6.0  |
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.7 |
+| <a name="requirement_github"></a> [github](#requirement\_github) | >= 6.0 |
 
 ## Providers
 
-| Name                                                      | Version |
-| --------------------------------------------------------- | ------- |
-| <a name="provider_github"></a> [github](#provider_github) | >= 6.0  |
+| Name | Version |
+|------|---------|
+| <a name="provider_github"></a> [github](#provider\_github) | >= 6.0 |
 
 ## Modules
 
@@ -139,37 +138,36 @@ No modules.
 
 ## Resources
 
-| Name                                                                                                                                                  | Type        |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [github_membership.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/membership)                             | resource    |
-| [github_repository_collaborator.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_collaborator)   | resource    |
-| [github_team.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/team)                                         | resource    |
-| [github_team_membership.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/team_membership)                   | resource    |
-| [github_team_settings.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/team_settings)                       | resource    |
-| [github_user_invitation_accepter.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/user_invitation_accepter) | resource    |
-| [github_organization.current](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/organization)                      | data source |
-| [github_users.all_users](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/users)                                  | data source |
+| Name | Type |
+|------|------|
+| [github_membership.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/membership) | resource |
+| [github_repository_collaborator.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_collaborator) | resource |
+| [github_team.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/team) | resource |
+| [github_team_membership.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/team_membership) | resource |
+| [github_team_settings.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/team_settings) | resource |
+| [github_user_invitation_accepter.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/user_invitation_accepter) | resource |
+| [github_organization.current](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/organization) | data source |
+| [github_users.all_users](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/users) | data source |
 
 ## Inputs
 
-| Name                                                                                                                              | Description                                                                                                                         | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Default | Required |
-| --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | :------: |
-| <a name="input_github_organization"></a> [github_organization](#input_github_organization)                                        | The GitHub organization name                                                                                                        | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | n/a     |   yes    |
-| <a name="input_organization_memberships"></a> [organization_memberships](#input_organization_memberships)                         | List of organization members. Each member can be configured with a role ('admin' or 'member') and downgrade behavior.               | <pre>list(object({<br/> username = string<br/> role = optional(string, "member")<br/> downgrade_on_destroy = optional(bool, false)<br/> }))</pre>                                                                                                                                                                                                                                                                                                                                                                                                                         | `[]`    |    no    |
-| <a name="input_organization_memberships_enabled"></a> [organization_memberships_enabled](#input_organization_memberships_enabled) | Whether to manage organization memberships with Terraform. If false, organization memberships must be managed outside of Terraform. | `bool`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `true`  |    no    |
-| <a name="input_repository_collaborators"></a> [repository_collaborators](#input_repository_collaborators)                         | Map of repositories to their list of collaborators. Key format: owner/repository                                                    | <pre>map(list(object({<br/> username = string<br/> permission = optional(string, "push")<br/> permission_diff_suppression = optional(bool, false)<br/> })))</pre>                                                                                                                                                                                                                                                                                                                                                                                                         | `{}`    |    no    |
-| <a name="input_teams"></a> [teams](#input_teams)                                                                                  | Map of teams to manage                                                                                                              | <pre>map(object({<br/> name = string<br/> description = optional(string)<br/> privacy = optional(string, "secret")<br/> parent_team_id = optional(number)<br/> ldap_dn = optional(string)<br/> create_default_maintainer = optional(bool, false)<br/> members = optional(list(object({<br/> username = string<br/> role = optional(string, "member")<br/> })), [])<br/> review_request_delegation = optional(object({<br/> algorithm = optional(string, "ROUND_ROBIN")<br/> member_count = optional(number, 1)<br/> notify = optional(bool, true)<br/> }))<br/> }))</pre> | `{}`    |    no    |
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_github_organization"></a> [github\_organization](#input\_github\_organization) | The GitHub organization name | `string` | n/a | yes |
+| <a name="input_organization_memberships"></a> [organization\_memberships](#input\_organization\_memberships) | List of organization members. Each member can be configured with a role ('admin' or 'member') and downgrade behavior. | <pre>list(object({<br/>    username             = string<br/>    role                 = optional(string, "member")<br/>    downgrade_on_destroy = optional(bool, false)<br/>  }))</pre> | `[]` | no |
+| <a name="input_organization_memberships_enabled"></a> [organization\_memberships\_enabled](#input\_organization\_memberships\_enabled) | Whether to manage organization memberships with Terraform. If false, organization memberships must be managed outside of Terraform. | `bool` | `true` | no |
+| <a name="input_repository_collaborators"></a> [repository\_collaborators](#input\_repository\_collaborators) | Map of repositories to their list of collaborators. Key format: owner/repository | <pre>map(list(object({<br/>    username                    = string<br/>    permission                  = optional(string, "push")<br/>    permission_diff_suppression = optional(bool, false)<br/>  })))</pre> | `{}` | no |
+| <a name="input_teams"></a> [teams](#input\_teams) | Map of teams to manage | <pre>map(object({<br/>    name                      = string<br/>    description               = optional(string)<br/>    privacy                   = optional(string, "secret")<br/>    parent_team_id            = optional(number)<br/>    ldap_dn                   = optional(string)<br/>    create_default_maintainer = optional(bool, false)<br/>    members = optional(list(object({<br/>      username = string<br/>      role     = optional(string, "member")<br/>    })), [])<br/>    review_request_delegation = optional(object({<br/>      algorithm    = optional(string, "ROUND_ROBIN")<br/>      member_count = optional(number, 1)<br/>      notify       = optional(bool, true)<br/>    }))<br/>  }))</pre> | `{}` | no |
 
 ## Outputs
 
-| Name                                                                                                        | Description                                                                      |
-| ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| <a name="output_organization_memberships"></a> [organization_memberships](#output_organization_memberships) | Map of organization members and their roles                                      |
-| <a name="output_repository_collaborators"></a> [repository_collaborators](#output_repository_collaborators) | Map of repository collaborators in format 'repo:username' with their permissions |
-| <a name="output_team_memberships"></a> [team_memberships](#output_team_memberships)                         | Map of team memberships in format 'team:username' with their roles               |
-| <a name="output_team_settings"></a> [team_settings](#output_team_settings)                                  | Map of team settings for teams with review request delegation configured         |
-| <a name="output_teams"></a> [teams](#output_teams)                                                          | Map of team names to their properties including ID and slug                      |
-
+| Name | Description |
+|------|-------------|
+| <a name="output_organization_memberships"></a> [organization\_memberships](#output\_organization\_memberships) | Map of organization members and their roles |
+| <a name="output_repository_collaborators"></a> [repository\_collaborators](#output\_repository\_collaborators) | Map of repository collaborators in format 'repo:username' with their permissions |
+| <a name="output_team_memberships"></a> [team\_memberships](#output\_team\_memberships) | Map of team memberships in format 'team:username' with their roles |
+| <a name="output_team_settings"></a> [team\_settings](#output\_team\_settings) | Map of team settings for teams with review request delegation configured |
+| <a name="output_teams"></a> [teams](#output\_teams) | Map of team names to their properties including ID and slug |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Built By
