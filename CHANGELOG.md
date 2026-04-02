@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/masterpointio/terraform-github-teams/compare/v0.2.0...v0.2.1) (2026-04-02)
+
+
+### Bug Fixes
+
+* pin GitHub Actions to commit SHAs (INT-326) ([#19](https://github.com/masterpointio/terraform-github-teams/issues/19)) ([bdd3129](https://github.com/masterpointio/terraform-github-teams/commit/bdd3129c4ab4f2207bb2fef34aefb712aa916fd5))
+
 ## [0.2.0](https://github.com/masterpointio/terraform-github-teams/compare/v0.1.0...v0.2.0) (2025-04-22)
 
 
